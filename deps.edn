@@ -27,4 +27,4 @@
    :exec-fn deps-deploy.deps-deploy/deploy
    :exec-args {:installer :remote
                :sign-releases? false
-               :artifact "target/com.ovistoica/ring-nexus-middleware-2025.07.16.jar"}}}}
+               :artifact "target/com.ovistoica/ring-nexus-middleware-2025.07.17.jar"}}}}
