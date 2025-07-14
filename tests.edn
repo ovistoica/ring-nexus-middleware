@@ -1,9 +1,6 @@
 #kaocha/v1
-{:plugins [:kaocha.plugin/hooks
-           :noyoda.plugin/swap-actual-and-expected]
+{:plugins [:noyoda.plugin/swap-actual-and-expected]
  :tests [{:id :unit
           :source-paths ["src"]
           :test-paths ["test"]
-          :ns-patterns ["-test$"]}]
-
- :kaocha/reporter [kaocha.report.progress/report]}
+          :ns-patterns ["-test$"]}]}
