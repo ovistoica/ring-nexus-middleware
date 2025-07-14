@@ -46,12 +46,17 @@
   system - The live system that will be passed to nexus. Can be an atom, a DB
   connection, a map containing multiple atoms, datomic connections or any link
   to a live system. N.B. nexus requires a :nexus/system->state functon that
-  transforms the system into a immutable state snapshot."
-  [handler nexus system]
+  transforms the system into a immutable state snapshot. `wrap-nexus` will use
+  `nexus/system->state` to add a snapshot of the state to the ring request
+
+  optional config  - Last parameter is an optional config map
+      ::state-k - the key on which to put the state snapshot"
+  [handler {:keys [nexus/system->state] :as nexus} system & [{::keys [state-k]
+                                                              :or {state-k :ring-nexus/state}}]]
   (fn [request respond raise]
-    (try (let [actions (handler request)]
+    (try (let [actions (handler (assoc request state-k (system->state system)))]
            (nexus/dispatch (prepare-nexus nexus request respond raise)
-                           system
-                           {:request request}
-                           actions))
+               system
+               {:request request}
+             actions))
          (catch Exception e (raise e)))))

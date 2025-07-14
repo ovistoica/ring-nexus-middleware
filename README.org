@@ -179,7 +179,9 @@ Using an action dispatch system, ring handlers can become pure:
 #+end_src
 
 
-** =ring-nexus-middleware= by default provides several ring related effects/actions:
+** Default actions
+ =ring-nexus-middleware= by default provides several ring related effects/actions:
+
 - =:http/respond= effect - takes a ring response map and responds to the request with it-
 Convenience actions over =:http/respond=
 - =:http-response/ok=
@@ -188,3 +190,24 @@ Convenience actions over =:http/respond=
 - =:http-response/not-found=
 - =:http-response/internal-server-error=
 - =:http-response/forbidden=
+
+** State snapshot
+
+It's useful to have a state snapshot in the request, as we do in [[https://github.com/cjohansen/nexus#pure-actions][pure nexus
+actions]]. To achieve this, =ring-nexus-middleware= provides a snapshot of the
+state at the time of the request. The default key is =ring-nexus/state= but it
+can be changed:
+
+#+begin_src clojure
+(require '[ring-nexus-middleware :as ring-nexus])
+
+(ring-nexus/wrap-nexus nexus store {::ring-nexus/state-k :my.cool/state})
+
+(defn create-user [req]
+  (let [user-input (:body req)
+        state (:my.cool/state req)]
+    (if (conflict-input? state (:body req))
+      [[:http-response/bad-request {:message "Email aleary exists"}]]
+      [[:effects/save [:users (:email user-input)] user-input]
+       [:http-response/ok {:message "User saved succesfully"}]])
+#+end_src
