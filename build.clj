@@ -5,7 +5,7 @@
    [deps-deploy.deps-deploy :as dd]))
 
 (def lib 'com.ovistoica/ring-nexus-middleware)
-(def version "2025.07.14")
+(def version "2025.07.15")
 (def class-dir "target/classes")
 
 (defn- jar-opts [opts]
