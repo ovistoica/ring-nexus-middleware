@@ -13,6 +13,7 @@
                 ring/ring-mock {:mvn/version "0.6.1"}}}
   :test
   {:extra-paths ["test"]
+   :main-opts ["-m" "kaocha.runner"]
    :extra-deps
    {lambdaisland/kaocha {:mvn/version "1.91.1392"}
     kaocha-noyoda/kaocha-noyoda {:mvn/version "2019-06-03"}}}
