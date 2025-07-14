@@ -33,10 +33,24 @@
                                         {:status 500, :body response-body}]]))))
 
 (defn wrap-nexus
-  [handler nexus-map system]
+  "Given a nexus config map and a live system, wrap nexus action dispatch to
+  provide FCIS (Functional Core Imperative Shell) support.
+
+  Parameters:
+
+  handler - The handler on which to wrap
+
+  nexus - The nexus config map. See https://github.com/cjohansen/nexus for more
+  info on what the nexus map requires
+
+  system - The live system that will be passed to nexus. Can be an atom, a DB
+  connection, a map containing multiple atoms, datomic connections or any link
+  to a live system. N.B. nexus requires a :nexus/system->state functon that
+  transforms the system into a immutable state snapshot."
+  [handler nexus system]
   (fn [request respond raise]
     (let [actions (handler request)]
-      (nexus/dispatch (prepare-nexus nexus-map request respond raise)
+      (nexus/dispatch (prepare-nexus nexus request respond raise)
                       system
                       {:request request}
                       actions))))
