@@ -125,3 +125,16 @@
              [{:body {}, :headers {}, :status 200}
               {:body {:a {:b 1}}, :headers {}, :status 200}]))
       (is (= @store {:a {:b 1}})))))
+
+(deftest passthrough-normal-ring-responses
+  (testing "Normal ring responses are just passed through"
+    (let [store (atom {})
+          nexus {:nexus/system->state identity,
+                 :nexus/effects {:effects/save
+                                 (fn [_ store path v]
+                                   (swap! store assoc-in path v))}}
+          handler (-> (fn [_] {:status 200 :body {:message "I'm a classic ring handler"}})
+                      (core/wrap-nexus nexus store))]
+
+      (is (= (handler {:body {}} respond identity)
+             [{:status 200 :body {:message "I'm a classic ring handler"}}])))))

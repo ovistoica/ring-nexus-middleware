@@ -235,6 +235,19 @@ The state key can also be changed:
 (ring-nexus/wrap-nexus create-user nexus store {::ring-nexus/state-k :my.cool/state})
 #+end_src
 
+** Mixing normal ring handlers with FCIS handlers
+
+=ring-nexus-middleware= mixes seamlessly with classing ring handlers. Simply
+return a classic ring map and the middleware will be bypassed. The action
+handler is only triggered when the return type is a vector
+
+#+begin_src clojure
+(defn normal [req] {:status 200 :body {:message "I am normal ring response"}})
+
+(defn nexus [req] [[:http-response/ok {:message "I am FCIS ring response"}]])
+#+end_src
+
+
 ** Recommendations
 
 *** Be careful using =nexus.registry= when using =nexus= both on frontend & backend

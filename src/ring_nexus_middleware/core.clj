@@ -54,9 +54,12 @@
   [handler {:keys [nexus/system->state] :as nexus} system & [{::keys [state-k]
                                                               :or {state-k :ring-nexus/state}}]]
   (fn [request respond raise]
-    (try (let [actions (handler (assoc request state-k (system->state system)))]
-           (nexus/dispatch (prepare-nexus nexus request respond raise)
-               system
-               {:request request}
-             actions))
+    (try
+      (let [result (handler (assoc request state-k (system->state system)))]
+        (if (vector? result)
+          (nexus/dispatch (prepare-nexus nexus request respond raise)
+              system
+              {:request request}
+            result)
+          (respond result))) ;; classic ring map
          (catch Exception e (raise e)))))
