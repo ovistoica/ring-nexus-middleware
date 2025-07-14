@@ -103,7 +103,7 @@ Using an action dispatch system, ring handlers can become pure:
 
 
 
-*** Fetch google page example. See example code
+*** Fetch google page example. See [[./examples/src/ring_nexus_middleware_examples/google_page.clj][example code]]
 
 #+begin_src clojure
 (ns ring-nexus-middleware-examples.google-page
