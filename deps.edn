@@ -1,0 +1,6 @@
+{:paths ["src"]
+ :deps {no.cjohansen/nexus {:mvn/version "2025.07.1"}}
+ :aliases
+ {:dev
+  {:extra-paths ["dev"]
+   :extra-deps {}}}}
