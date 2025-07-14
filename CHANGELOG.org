@@ -1,0 +1,14 @@
+#+title:  Change Log
+#+description:  All notable changes to this project will be documented in this file.
+
+* 2025.07.16
+
+** Added
+- Make =wrap-nexus= bypass requests that don't return actions a.k.a normal ring maps
+- Added tests for normal ring requests bypass
+
+* 2025.07.15
+
+** Added
+- =wrap-nexus= now adds a state snapshot resulting from =nexus/system->state= to the ring request
+- Support for different state key
