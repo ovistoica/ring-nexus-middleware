@@ -6,6 +6,9 @@
 ** Added
 - Support for single arity request handlers
 
+** Changed
+- Some of the test to the 1-arity handler
+
 * 2025.07.17
 
 ** Changed

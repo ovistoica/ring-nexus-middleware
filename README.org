@@ -74,7 +74,7 @@ Using an action dispatch system, ring handlers can become pure:
 ** Getting started
 
 #+begin_src
- com.ovistoica/ring-nexus-middleware {:mvn/version "2025.07.17"}
+ com.ovistoica/ring-nexus-middleware {:mvn/version "2025.07.18"}
 #+end_src
 
 *** Basic usage

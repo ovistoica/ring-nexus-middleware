@@ -4,7 +4,7 @@
   <packaging>jar</packaging>
   <groupId>com.ovistoica</groupId>
   <artifactId>ring-nexus-middleware</artifactId>
-  <version>2025.07.17</version>
+  <version>2025.07.18</version>
   <name>ring-nexus-middleware</name>
   <description>Middleware for using FCIS style ring handlers</description>
   <dependencies>
