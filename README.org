@@ -260,9 +260,8 @@ request map.
 
 ** Acknowledgments
 
-This library couldn't be possible without the work of [[https://magnars.com][Magnar Sveen]] ([[https://github.com/magnars][@magnars]]),
-[[https://cjohansen.no][Christian Johansen]] ([[https://github.com/cjohansen][@cjohansen]]), [[https://play.teod.eu/][Teodor Heggelund]] ([[https://github.com/teodorlu][@teodorlu]])
-and [[https://www.booleanknot.com/][James Reeves]] ([[https://github.com/weavejester][@weavejester]])
+This library couldn't be possible without the libraries and FCIS promotion work of [[https://www.booleanknot.com/][James Reeves]] ([[https://github.com/weavejester][@weavejester]]), [[https://magnars.com][Magnar Sveen]] ([[https://github.com/magnars][@magnars]]),
+[[https://cjohansen.no][Christian Johansen]] ([[https://github.com/cjohansen][@cjohansen]]) and [[https://play.teod.eu/][Teodor Heggelund]] ([[https://github.com/teodorlu][@teodorlu]]).
 
 
 ** License: MIT
