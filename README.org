@@ -195,19 +195,42 @@ Convenience actions over =:http/respond=
 
 It's useful to have a state snapshot in the request, as we do in [[https://github.com/cjohansen/nexus#pure-actions][pure nexus
 actions]]. To achieve this, =ring-nexus-middleware= provides a snapshot of the
-state at the time of the request. The default key is =ring-nexus/state= but it
-can be changed:
+state at the time of the request. The default key is =:ring-nexus/state=:
+
+#+begin_src clojure
+(require '[ring-nexus-middleware :as ring-nexus])
+
+(def store (atom {:hello :world}))
+
+(def nexus
+  {:nexus/system->state deref, ;; take store and get a snapshot
+   :nexus/effects {:effects/save (fn [_ store path v]
+                                   (swap! store assoc-in path v))}})
+
+(defn print-state-handler
+  [req]
+  (let [state (:nexus-ring/state req)] ;; pure snapshot
+    [[:http-response/ok state]]))
+
+(ring-nexus/wrap-nexus print-state-handler nexus store)
+
+#+end_src
+
+
+
+The state key can also be changed:
 
 #+begin_src clojure
 (require '[ring-nexus-middleware :as ring-nexus])
 
 (ring-nexus/wrap-nexus nexus store {::ring-nexus/state-k :my.cool/state})
 
-(defn create-user [req]
+(defn create-user
+  [req]
   (let [user-input (:body req)
         state (:my.cool/state req)]
     (if (conflict-input? state (:body req))
       [[:http-response/bad-request {:message "Email aleary exists"}]]
       [[:effects/save [:users (:email user-input)] user-input]
-       [:http-response/ok {:message "User saved succesfully"}]])
+       [:http-response/ok {:message "User saved succesfully"}]])))
 #+end_src
