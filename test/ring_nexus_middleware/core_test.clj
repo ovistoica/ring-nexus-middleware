@@ -4,6 +4,10 @@
 
 (defn test-action-handler [req] (:body req))
 
+(defn make-test-handler [nexus system]
+  (-> test-action-handler
+      (core/wrap-nexus nexus system)))
+
 ; Global state for collecting responses
 (def responses (atom []))
 
@@ -21,8 +25,7 @@
 
 (deftest http-respond-effect-test
   (testing "Returns correct response body"
-    (let [handler (-> test-action-handler
-                      (core/wrap-nexus {:nexus/system->state identity} {}))]
+    (let [handler (make-test-handler {:nexus/system->state identity} nil)]
       (handler {:body [[:http/respond
                         {:status 200, :body {:message "Success"}}]]}
                respond
@@ -32,8 +35,7 @@
 
 (deftest ring-response-convenience-actions
   (testing "Ring response convenience actions"
-    (let [handler (-> test-action-handler
-                      (core/wrap-nexus {:nexus/system->state identity} {}))]
+    (let [handler (make-test-handler {:nexus/system->state identity} nil)]
       (doseq [actions [[[:http-response/ok {:message "ok"}]]
                        [[:http-response/bad-request {:message "bad-request"}]]
                        [[:http-response/unauthorized {:message "unauthorized"}]]
@@ -56,9 +58,25 @@
                  :nexus/effects {:effects/save
                                  (fn [_ store path v]
                                    (swap! store assoc-in path v))}}
-          handler (-> test-action-handler
-                      (core/wrap-nexus nexus store))]
+          handler (make-test-handler nexus store)]
       (handler {:body [[:effects/save [:a :b] 1]
                        [:http-response/ok {:message "Write succeeded"}]]} respond identity)
+      (is (= @responses [{:body {:message "Write succeeded"}, :headers {}, :status 200}]))
+      (is (= @store {:a {:b 1}})))))
+
+(deftest subsequent-actions-test
+  (testing "Test if subsequently dispatched actions are handled"
+    (let [store (atom {})
+          nexus {:nexus/system->state deref,
+                 :nexus/effects {:effects/save
+                                 (fn [_ store path v]
+                                   (swap! store assoc-in path v))
+                                 :effects/delay
+                                 (fn [{:keys [dispatch]} _ ms actions]
+                                   (Thread/sleep ms)
+                                   (dispatch actions))}}
+          handler (make-test-handler nexus store)]
+      (handler {:body [[:effects/delay 100 [[:effects/save [:a :b] 1]
+                                            [:http-response/ok {:message "Write succeeded"}]]]]} respond identity)
       (is (= @responses [{:body {:message "Write succeeded"}, :headers {}, :status 200}]))
       (is (= @store {:a {:b 1}})))))
