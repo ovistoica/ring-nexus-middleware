@@ -1,6 +1,11 @@
 #+title:  Change Log
 #+description:  All notable changes to this project will be documented in this file.
 
+* 2025.07.18
+
+** Added
+- Support for single arity request handlers
+
 * 2025.07.17
 
 ** Changed

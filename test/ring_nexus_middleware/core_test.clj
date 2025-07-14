@@ -9,7 +9,7 @@
   (-> test-action-handler
       (core/wrap-nexus nexus system)))
 
-; Global state for collecting responses
+                                        ; Global state for collecting responses
 (def responses (atom []))
 
 ;; Global respond function that appends to responses
@@ -29,7 +29,11 @@
                respond
                identity)
       (is (= @responses
-             [{:status 200, :headers {}, :body {:message "Success"}}])))))
+             [{:status 200, :headers {}, :body {:message "Success"}}]))
+      (testing "Single arity handler works too"
+        (is (= (handler {:body [[:http/respond
+                                 {:status 200, :body {:message "Success"}}]]})
+               {:status 200, :headers {}, :body {:message "Success"}}))))))
 
 
 (deftest ring-response-convenience-actions
@@ -44,21 +48,21 @@
                        [[:http-response/forbidden {:message "forbidden"}]]]]
         (handler {:body actions} respond identity))
       (is
-        (= @responses
-           [{:body {:message "ok"}, :headers {}, :status 200}
-            {:body {:message "bad-request"}, :headers {}, :status 400}
-            {:body {:message "unauthorized"}, :headers {}, :status 401}
-            {:body {:message "not-found"}, :headers {}, :status 404}
-            {:body {:message "internal-server-error"}, :headers {}, :status 500}
-            {:body {:message "forbidden"}, :headers {}, :status 403}])))))
+       (= @responses
+          [{:body {:message "ok"}, :headers {}, :status 200}
+           {:body {:message "bad-request"}, :headers {}, :status 400}
+           {:body {:message "unauthorized"}, :headers {}, :status 401}
+           {:body {:message "not-found"}, :headers {}, :status 404}
+           {:body {:message "internal-server-error"}, :headers {}, :status 500}
+           {:body {:message "forbidden"}, :headers {}, :status 403}])))))
 
 (deftest write-to-store
   (testing "handler that writes to state"
     (let [store (atom {})
           nexus {:nexus/system->state deref,
                  :nexus/effects {:effects/save
-                                   (fn [_ store path v]
-                                     (swap! store assoc-in path v))}}
+                                 (fn [_ store path v]
+                                   (swap! store assoc-in path v))}}
           handler (make-test-handler nexus store)]
       (handler {:body [[:effects/save [:a :b] 1]
                        [:http-response/ok {:message "Write succeeded"}]]}
@@ -79,16 +83,13 @@
                                                   (Thread/sleep ms)
                                                   (dispatch actions))}}
           handler (make-test-handler nexus store)]
-      (handler {:body [[:effects/delay 100
-                        [[:effects/save [:a :b] 1]
-                         [:http-response/ok
-                          {:message "Write succeeded after delay"}]]]]}
-               respond
-               identity)
-      (is (= @responses
-             [{:body {:message "Write succeeded after delay"},
-               :headers {},
-               :status 200}]))
+      (is (= (handler {:body [[:effects/delay 100
+                               [[:effects/save [:a :b] 1]
+                                [:http-response/ok
+                                 {:message "Write succeeded after delay"}]]]]})
+             {:body {:message "Write succeeded after delay"},
+              :headers {},
+              :status 200}))
       (is (= @store {:a {:b 1}})))))
 
 
@@ -97,16 +98,13 @@
     (let [store (atom {})
           nexus {:nexus/system->state deref,
                  :nexus/effects {:effects/save
-                                   (fn [_ store path v]
-                                     (swap! store assoc-in path v))}}
+                                 (fn [_ store path v]
+                                   (swap! store assoc-in path v))}}
           handler (-> (fn [{:keys [nexus/state], :as req}]
                         (into (:body req) [[:http-response/ok state]]))
                       (core/wrap-nexus nexus store))]
-      (handler {:body [[:effects/save [:a :b] 1]]} respond identity)
-      (handler {:body [[:effects/save {:hello :world}]]} respond identity)
-      (is (= @responses
-             [{:body {}, :headers {}, :status 200}
-              {:body {:a {:b 1}}, :headers {}, :status 200}]))
+      (is (= (handler {:body [[:effects/save [:a :b] 1]]}) {:body {}, :headers {}, :status 200}))
+      (is (= (handler {:body [[:effects/save {:hello :world}]]}) {:body {:a {:b 1}}, :headers {}, :status 200}))
       (is (= @store {:a {:b 1}})))))
 
 (deftest state-snapshot-other-k

@@ -51,15 +51,36 @@
 
   optional config  - Last parameter is an optional config map
       ::state-k - the key on which to put the state snapshot"
-  [handler {:keys [nexus/system->state] :as nexus} system & [{::keys [state-k]
-                                                              :or {state-k :nexus/state}}]]
-  (fn [request respond raise]
-    (try
-      (let [result (handler (assoc request state-k (system->state system)))]
-        (if (vector? result)
-          (nexus/dispatch (prepare-nexus nexus request respond raise)
-              system
-              {:request request}
-            result)
-          (respond result))) ;; classic ring map
-         (catch Exception e (raise e)))))
+  [handler {:keys [nexus/system->state], :as nexus} system &
+   [{::keys [state-k], :or {state-k :nexus/state}}]]
+  (fn
+    ;; 1-arity: synchronous handler (returns response directly)
+    ([request]
+     (try (let [result (handler (assoc request state-k (system->state system)))]
+            (if (vector? result)
+              ;; For sync handlers, we need to create a promise-based
+              ;; dispatch
+              (let [response-promise (promise)]
+                (nexus/dispatch (prepare-nexus nexus
+                                               request
+                                               #(deliver response-promise %)
+                                               #(deliver response-promise
+                                                         {:status 500,
+                                                          :body (.getMessage
+                                                                  %)}))
+                                system
+                                {:request request}
+                                result)
+                @response-promise)
+              result)) ;; classic ring map
+          (catch Exception e {:status 500, :body (.getMessage e)})))
+    ;; 3-arity: asynchronous handler (uses respond/raise callbacks)
+    ([request respond raise]
+     (try (let [result (handler (assoc request state-k (system->state system)))]
+            (if (vector? result)
+              (nexus/dispatch (prepare-nexus nexus request respond raise)
+                              system
+                              {:request request}
+                              result)
+              (respond result))) ;; classic ring map
+          (catch Exception e (raise e))))))
