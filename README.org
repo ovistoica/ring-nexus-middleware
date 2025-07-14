@@ -1,11 +1,8 @@
 #+title: Ring Nexus Middleware
 
-* Ring nexus middleware
-
 Middleware to support FCIS (Functional Core, Imperative Shell) style programming in ring handlers through [[https://github.com/cjohansen/nexus][Nexus]].
 
-
-* Why?
+** Why?
 
 Classic ring handlers are hard to test and 99% of time are impure functions. The
 classic ring handler goes like this:
@@ -73,6 +70,34 @@ Using an action dispatch system, ring handlers can become pure:
 #+end_src
 
 *NOTE*: In the above example, the DB is a pure snapshot (like datomic). For SQL dbs, there needs to be a pre-requisite step of getting all of the required info from the DB
+
+** Getting started
+
+#+begin_src
+ com.ovistoica/ring-nexus-middleware {:mvn/version "2025.07.14"}
+#+end_src
+
+*** Basic usage
+
+#+begin_src clojure
+(def store (atom {}))
+(def nexus {:nexus/system->state deref,
+            :nexus/effects {:effects/save
+                              (fn [_ store path v]
+                                (swap! store assoc-in path v))}})
+
+(defn handler
+  [req]
+  [[:effects/save [:it] "works!"]
+   [:http-response/ok {:message "Saved to state"}]])
+
+(def nexus-handler (wrap-nexus #'handler nexus store))
+
+(nexus-handler dummy-req) ;; => {:status 200 :body {:message "Saved to state"}}
+
+@store ;; => {:it "works!"}
+#+end_src
+
 
 ** =ring-nexus-middleware= by default provides several ring related effects/actions:
 - =:http/respond= effect - takes a ring response map and responds to the request with it-
