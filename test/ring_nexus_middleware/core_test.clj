@@ -99,7 +99,7 @@
                  :nexus/effects {:effects/save
                                    (fn [_ store path v]
                                      (swap! store assoc-in path v))}}
-          handler (-> (fn [{:keys [ring-nexus/state], :as req}]
+          handler (-> (fn [{:keys [nexus/state], :as req}]
                         (into (:body req) [[:http-response/ok state]]))
                       (core/wrap-nexus nexus store))]
       (handler {:body [[:effects/save [:a :b] 1]]} respond identity)

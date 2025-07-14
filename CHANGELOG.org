@@ -1,6 +1,11 @@
 #+title:  Change Log
 #+description:  All notable changes to this project will be documented in this file.
 
+* 2025.07.17
+
+** Changed
+- *BREAKING*: Changed the default keyword for adding state snapshot on the req map from =:ring-nexus/state= to =:nexus/state=.
+
 * 2025.07.16
 
 ** Added

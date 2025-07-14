@@ -52,7 +52,7 @@
   optional config  - Last parameter is an optional config map
       ::state-k - the key on which to put the state snapshot"
   [handler {:keys [nexus/system->state] :as nexus} system & [{::keys [state-k]
-                                                              :or {state-k :ring-nexus/state}}]]
+                                                              :or {state-k :nexus/state}}]]
   (fn [request respond raise]
     (try
       (let [result (handler (assoc request state-k (system->state system)))]

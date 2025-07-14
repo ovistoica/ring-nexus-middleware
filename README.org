@@ -197,7 +197,7 @@ Convenience actions over =:http/respond=
 
 It's useful to have a state snapshot in the request, as we do in [[https://github.com/cjohansen/nexus#pure-actions][pure nexus
 actions]]. To achieve this, =ring-nexus-middleware= provides a snapshot of the
-state at the time of the request. The default key is =:ring-nexus/state=:
+state at the time of the request. The default key is =:nexus/state=:
 
 #+begin_src clojure
 (require '[ring-nexus-middleware :as ring-nexus])
@@ -211,7 +211,7 @@ state at the time of the request. The default key is =:ring-nexus/state=:
 
 (defn print-state-handler
   [req]
-  (let [state (:nexus-ring/state req)] ;; pure snapshot
+  (let [state (:nexus/state req)] ;; pure snapshot
     [[:http-response/ok state]]))
 
 (ring-nexus/wrap-nexus print-state-handler nexus store)
