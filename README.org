@@ -80,6 +80,8 @@ Using an action dispatch system, ring handlers can become pure:
 *** Basic usage
 
 #+begin_src clojure
+(require '[ring-nexus-middleware.core :refer [wrap-nexus]])
+
 (def store (atom {}))
 
 ;; See https://github.com/cjohansen/nexus for all config options for nexus
