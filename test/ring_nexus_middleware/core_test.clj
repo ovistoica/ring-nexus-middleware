@@ -77,6 +77,6 @@
                                    (dispatch actions))}}
           handler (make-test-handler nexus store)]
       (handler {:body [[:effects/delay 100 [[:effects/save [:a :b] 1]
-                                            [:http-response/ok {:message "Write succeeded"}]]]]} respond identity)
-      (is (= @responses [{:body {:message "Write succeeded"}, :headers {}, :status 200}]))
+                                            [:http-response/ok {:message "Write succeeded after delay"}]]]]} respond identity)
+      (is (= @responses [{:body {:message "Write succeeded after delay"}, :headers {}, :status 200}]))
       (is (= @store {:a {:b 1}})))))
