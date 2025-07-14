@@ -81,6 +81,8 @@ Using an action dispatch system, ring handlers can become pure:
 
 #+begin_src clojure
 (def store (atom {}))
+
+;; See https://github.com/cjohansen/nexus for all config options for nexus
 (def nexus {:nexus/system->state deref,
             :nexus/effects {:effects/save
                               (fn [_ store path v]
