@@ -1,6 +1,6 @@
 #+title: Ring Nexus Middleware
 
-Middleware to support FCIS (Functional Core, Imperative Shell) style programming in ring handlers through [[https://github.com/cjohansen/nexus][Nexus]].
+Middleware to support FCIS (Functional Core, Imperative Shell) style programming in ring handlers through [[https://github.com/cjohansen/nexus][Nexus]] - a zero-dependency data-driven action dispatch system.
 
 ** Why?
 
