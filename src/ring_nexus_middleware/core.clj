@@ -49,8 +49,9 @@
   transforms the system into a immutable state snapshot."
   [handler nexus system]
   (fn [request respond raise]
-    (let [actions (handler request)]
-      (nexus/dispatch (prepare-nexus nexus request respond raise)
-                      system
-                      {:request request}
-                      actions))))
+    (try (let [actions (handler request)]
+           (nexus/dispatch (prepare-nexus nexus request respond raise)
+                           system
+                           {:request request}
+                           actions))
+         (catch Exception e (raise e)))))
