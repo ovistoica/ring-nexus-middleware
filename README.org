@@ -72,10 +72,9 @@ Using an action dispatch system, ring handlers can become pure:
        [:http-response/ok {:message "All good!"}]])))
 #+end_src
 
-*NOTE*:
-- In the above example, the DB is a pure snapshot (like datomic). For SQL dbs, there needs to be a pre-requisite step of getting all of the required info from the DB
+*NOTE*: In the above example, the DB is a pure snapshot (like datomic). For SQL dbs, there needs to be a pre-requisite step of getting all of the required info from the DB
 
-* =ring-nexus-middleware= by default provides several ring related effects/actions:
+** =ring-nexus-middleware= by default provides several ring related effects/actions:
 - =:http/respond= effect - takes a ring response map and responds to the request with it-
 Convenience actions over =:http/respond=
 - =:http-response/ok=
