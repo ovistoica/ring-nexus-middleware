@@ -222,7 +222,7 @@ The state key can also be changed:
       [[:effects/save [:users (:email user-input)] user-input]
        [:http-response/ok {:message "User saved succesfully"}]])))
 
-(ring-nexus/wrap-nexus create-user nexus store {::ring-nexus/state-k :my.cool/state})
+(ring-nexus/wrap-nexus create-user nexus store {:ring-nexus/state-k :my.cool/state})
 #+end_src
 
 ** Mixing normal ring handlers with FCIS handlers
