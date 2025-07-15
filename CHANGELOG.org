@@ -1,40 +1,40 @@
 #+title:  Change Log
 #+description:  All notable changes to this project will be documented in this file.
 
-* Unreleased
+** Unreleased
 
-** Added
+*** Added
 - Example of using =ring-nexus= with reitit and a datomic db
 - =ring-nexus= by default now fails fast if an action/effect fails
 - =:ring-nexus/fail-fast?= config option to dictate if fail-fast strategy is applied. Defaults to =true=
 - =:ring-nexus/on-error= callback config option. It will be called when an error occurs during dispatch. Defaults to throw
 - Test for the new functionality
 
-** Changed
+*** Changed
 - *BREAKING* Renamed =ring-nexus-middleware.*= namespaces to =ring-nexus.*=
 - *BREAKING* Changed =:ring-nexus-middleware.core/state-k= config option to =:ring-nexus/state-k=
 
-* 2025.07.18
+** 2025.07.18
 
-** Added
+*** Added
 - Support for single arity request handlers
 
-** Changed
+*** Changed
 - Some of the test to the 1-arity handler
 
-* 2025.07.17
+** 2025.07.17
 
-** Changed
+*** Changed
 - *BREAKING*: Changed the default keyword for adding state snapshot on the req map from =:ring-nexus/state= to =:nexus/state=.
 
-* 2025.07.16
+** 2025.07.16
 
-** Added
+*** Added
 - Make =wrap-nexus= bypass requests that don't return actions a.k.a normal ring maps
 - Added tests for normal ring requests bypass
 
-* 2025.07.15
+** 2025.07.15
 
-** Added
+*** Added
 - =wrap-nexus= now adds a state snapshot resulting from =nexus/system->state= to the ring request
 - Support for different state key
