@@ -7,6 +7,7 @@
   <version>2025.07.18</version>
   <name>ring-nexus-middleware</name>
   <description>Middleware for using FCIS style ring handlers</description>
+  <url>https://github.com/cjohansen/nexus</url>
   <dependencies>
     <dependency>
       <groupId>no.cjohansen</groupId>
