@@ -1,6 +1,11 @@
 #+title:  Change Log
 #+description:  All notable changes to this project will be documented in this file.
 
+* Unreleased
+
+** Added
+- Example of using =ring-nexus-middleware= with reitit and a datomic db
+
 * 2025.07.18
 
 ** Added

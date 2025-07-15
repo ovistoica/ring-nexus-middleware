@@ -21,7 +21,8 @@
   {:extra-paths ["./examples/src"]
    :extra-deps {ring/ring-jetty-adapter {:mvn/version "1.13.0"}
                 metosin/reitit {:mvn/version "0.9.1"}
-                hato/hato {:mvn/version "1.1.0-SNAPSHOT"}}}
+                hato/hato {:mvn/version "1.1.0-SNAPSHOT"}
+                com.datomic/peer {:mvn/version "1.0.7364"}}}
   :deploy
   {:extra-deps {slipset/deps-deploy {:mvn/version "0.2.2"}}
    :exec-fn deps-deploy.deps-deploy/deploy
