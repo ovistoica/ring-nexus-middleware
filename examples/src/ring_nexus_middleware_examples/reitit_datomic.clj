@@ -127,7 +127,6 @@
 (nxr/register-effect! :db/transact
   ^:nexus/batch
   (fn [_ {:keys [conn]} transact-actions]
-    (prn transact-actions (batch-transactions transact-actions))
     @(d/transact conn (batch-transactions transact-actions))))
 
 (nxr/register-system->state! system->state)
