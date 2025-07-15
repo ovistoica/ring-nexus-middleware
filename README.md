@@ -128,7 +128,7 @@ Using an action dispatch system, ring handlers can become pure:
 @store ;; => {:it "works!"}
 ```
 
-### Fetch & display google homepage example. See [example code](./examples/src/ring_nexus_middleware_examples/google_page.clj)
+### Fetch & display google homepage example. See [example code](./examples/src/ring_nexus_examples/google_page.clj)
 
 ```clojure
 (ns ring-nexus-middleware-examples.google-page
@@ -189,7 +189,7 @@ Using an action dispatch system, ring handlers can become pure:
 
 ### All examples
 
-See [all examples here](./examples/src/ring_nexus_middleware_examples/)
+See [all examples here](./examples/src/ring_nexus_examples/)
 
 ## Default actions
 `ring-nexus-` by default provides several ring related effects/actions:
