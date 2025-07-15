@@ -7,7 +7,12 @@
   <version>2025.07.19</version>
   <name>ring-nexus-middleware</name>
   <description>Middleware for using FCIS style ring handlers</description>
-  <url>https://github.com/cjohansen/nexus</url>
+  <url>https://github.com/ovistoica/ring-nexus-middleware</url>
+  <scm>
+    <connection>scm:git:git://github.com/ovistoica/ring-nexus-middleware.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/ovistoica/ring-nexus-middleware.git</developerConnection>
+    <url>https://github.com/ovistoica/ring-nexus-middleware</url>
+  </scm>
   <dependencies>
     <dependency>
       <groupId>no.cjohansen</groupId>
