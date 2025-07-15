@@ -100,7 +100,7 @@ Using an action dispatch system, ring handlers can become pure:
 ## Getting started
 
 ```clojure
- com.ovistoica/ring-nexus-middleware {:mvn/version "2025.07.19"}
+ com.ovistoica/ring-nexus-middleware {:mvn/version "2025.07.20"}
 ```
 
 ### Basic usage
