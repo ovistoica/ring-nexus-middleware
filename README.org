@@ -14,26 +14,34 @@ classic ring handler goes like this:
 
 This is the "status quo" ring handler:
 #+begin_src clojure
-(defn hoc-handler
-  [system]
+(defn impure-handler
+  [system] ;; inject dependencies through HoF
   (fn [req]
-    (let [db (:db system)
-          input (:body req)]
-      (try
-        (let [result (persist-data! db input)]
-          {:status 200
-           :body {:success? true
-                  :message "Very big success"
-                  :result result}})
-        (catch Exception e
-            (http-response/bad-request (.getMessage e)))))))
+    (let [{:keys [conn]} system
+          db (d/db conn)
+          input (:body req)
+          stuff (get-stuff db)
+          bad-input? (compute-bad-input db req)]
+      (when bad-input?
+        ;; throw response for early exit
+        (http-response/bad-request! {:message "Bad input"}))
 
-(defn deps-on-req-handler
-  [req] ;; system added to req either in middleware or route definition
-  (let [db (:db req)
-        input (:body req)]
-    ;; same as above
-    ))
+      (when (should-call-external-service? input)
+        (try
+          @(notify-service! input)
+          (catch ExceptionInfo e
+            (http-response/internal-error! {:message "Something went wrong"})))
+        (http-response/ok! {:message "All good with notification"}))
+
+      (if
+        (should-be-parallel? req)
+        (do
+          (notify-service! input)
+          (http-response/ok {:message "Request issued"}))
+
+        (do
+          @(d/transact conn [input])
+          (http-response/ok {:message "All good"}))))))
 #+end_src
 
 This works, but it is hard to test independently, unless you start-up your entire component system, making your tests be at minimum integration tests or E2E tests.
@@ -41,28 +49,28 @@ This works, but it is hard to test independently, unless you start-up your entir
 Using an action dispatch system, ring handlers can become pure:
 
 #+begin_src clojure
-(defn test-handler
+(defn pure-handler
   [req]
-  (let [db (:db req)
+  (let [{:keys [db]} (:nexus/state req)
         input (:body req)
         stuff (get-stuff db)
-        is-bad-input? (compute-bad-input req)]
-
+        bad-input? (compute-bad-input db req)]
     (cond
-      is-bad-input?
-      [[:http-response/bad-request {:message "Bad input"}]]
+      bad-input? [[:http-response/bad-request {:message "Bad input"}]]
 
       (should-call-external-service? input)
       [[:service/notify input
         {:on-success [[:db/transact [(merge stuff input)]]
-                      [:http-response/ok {:message "All good with notification"}]]
-         :on-fail [[:http-response/internal-error {:message "Something went wrong"}]]}]]
+                      [:http-response/ok
+                       {:message "All good with notification"}]],
+         :on-fail [[:http-response/internal-error
+                    {:message "Something went wrong"}]]}]]
 
       (should-be-parallel? req)
       [[:process/parallel ;; parallel execution of the actions/effects
         [[:service/notify input]
-         [:http-response/ok {:message "Request issued"}]]]]
-
+         [:http-response/ok
+          {:message "Request issued"}]]]]
 
       :else ;; All good, actions executed sequentially
       [[:db/transact [input]]
