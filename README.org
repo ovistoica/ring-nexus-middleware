@@ -102,10 +102,7 @@ Using an action dispatch system, ring handlers can become pure:
 @store ;; => {:it "works!"}
 #+end_src
 
-
-
-
-*** Fetch google page example. See [[./examples/src/ring_nexus_middleware_examples/google_page.clj][example code]]
+*** Fetch & display google homepage example. See [[./examples/src/ring_nexus_middleware_examples/google_page.clj][example code]]
 
 #+begin_src clojure
 (ns ring-nexus-middleware-examples.google-page
@@ -162,24 +159,9 @@ Using an action dispatch system, ring handlers can become pure:
   (jetty/run-jetty (-> #'fetch-google-handler
                        (wrap-nexus nexus store))
                    {:port port, :join? false, :async? true}))
-
-(defn stop-server [server] (.stop server))
-
-
-(comment
-  (def srv (start-server 3123))
-  (stop-server srv)
-
-
-  (http/request {:method :get, :url "http://localhost:3123"})
-
-
-  @store ;; => {:google-page "<!doctype ...>
-
-  ,)
-
 #+end_src
 
+*** All examples [[./examples/src/ring_nexus_middleware_examples/][here]]
 
 ** Default actions
  =ring-nexus-middleware= by default provides several ring related effects/actions:
@@ -197,7 +179,7 @@ Convenience actions over =:http/respond=
 
 It's useful to have a state snapshot in the request, as we do in [[https://github.com/cjohansen/nexus#pure-actions][pure nexus
 actions]]. To achieve this, =ring-nexus-middleware= provides a snapshot of the
-state at the time of the request. The default key is =:nexus/state=:
+state at the time of the request. The default key containing the state is =:nexus/state=:
 
 #+begin_src clojure
 (require '[ring-nexus-middleware :as ring-nexus])
@@ -217,8 +199,6 @@ state at the time of the request. The default key is =:nexus/state=:
 (ring-nexus/wrap-nexus print-state-handler nexus store)
 
 #+end_src
-
-
 
 The state key can also be changed:
 
@@ -241,7 +221,7 @@ The state key can also be changed:
 
 =ring-nexus-middleware= mixes seamlessly with classing ring handlers. Simply
 return a classic ring map and the middleware will be bypassed. The action
-handler is only triggered when the return type is a vector
+handler is only triggered when the return type is a vector (of actions).
 
 #+begin_src clojure
 (defn normal [req] {:status 200 :body {:message "I am normal ring response"}})
@@ -262,12 +242,12 @@ cause conflicts. You can either:
 *** Read multiple times, write once
 
 Given the nature of FCIS, you cannot have multiple writes throughout the handler
-so you need to structure your logic so you can be fine with this.-
+so you need to structure your handler logic to accomodate for this limitation.
 
 *** Use an immutable DB like datomic
 
-This recommandation is not a must but it helps to have an entire snapshot of
-your DB in the handler on which you can make assertions.
+This recommandation is optional, but it helps to have an entire snapshot of
+your DB in the handler to make assertions.
 
 To replicate this with an SQL DB, you'd have to put a middleware before the
 final handler that receives the queries you need and puts the result into the
