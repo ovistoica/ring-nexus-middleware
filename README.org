@@ -172,7 +172,7 @@ Using an action dispatch system, ring handlers can become pure:
 *** All examples [[./examples/src/ring_nexus_middleware_examples/][here]]
 
 ** Default actions
- =ring-nexus-middleware= by default provides several ring related effects/actions:
+ =ring-nexus-= by default provides several ring related effects/actions:
 
 - =:http/respond= effect - takes a ring response map and responds to the request with it-
 Convenience actions over =:http/respond=
@@ -186,7 +186,7 @@ Convenience actions over =:http/respond=
 ** State snapshot
 
 It's useful to have a state snapshot in the request, as we do in [[https://github.com/cjohansen/nexus#pure-actions][pure nexus
-actions]]. To achieve this, =ring-nexus-middleware= provides a snapshot of the
+actions]]. To achieve this, =ring-nexus-= provides a snapshot of the
 state at the time of the request. The default key containing the state is =:nexus/state=:
 
 #+begin_src clojure
@@ -227,9 +227,9 @@ The state key can also be changed:
 
 ** Mixing normal ring handlers with FCIS handlers
 
-=ring-nexus-middleware= mixes seamlessly with classing ring handlers. Simply
-return a classic ring map and the middleware will be bypassed. The action
-handler is only triggered when the return type is a vector (of actions).
+=ring-nexus= mixes seamlessly with classing ring handlers. Simply return a
+classic ring map and the middleware will be bypassed. The action handler is only
+triggered when the return type is a vector (of actions).
 
 #+begin_src clojure
 (defn normal [req] {:status 200 :body {:message "I am normal ring response"}})
@@ -237,6 +237,42 @@ handler is only triggered when the return type is a vector (of actions).
 (defn nexus [req] [[:http-response/ok {:message "I am FCIS ring response"}]])
 #+end_src
 
+
+** Error handling
+
+By default, =ring-nexus= will throw any errors created in the handlers or during
+action/effect evaluation. The default error management strategy is [[https://github.com/cjohansen/nexus?tab=readme-ov-file#error-handling][fail-fast
+strategy]].
+
+You can overwrite this by passing =:ring-nexus/fail-fast?= =false= to
+=wrap-nexus=.
+
+=ring-nexus= acceps =:ring-nexus/on-error= callback config option. This function
+will be called when an error triggers during action/effect execution. Combine
+this with =:ring-nexus/fail-fast?= =false= to make your FCIS handlers return
+regardless of errors
+
+#+begin_src clojure
+(def store (atom {}))
+
+(def nexus {:nexus/system->state deref
+            :nexus/effects {:effects/save
+                            (fn [_ store path v]
+                              (throw (ex-info "Error saving to state" {:path path :v v}))
+                              (swap! store assoc-in path v))}})
+
+(defn no-throws-please
+  [_]
+  [[:effects/save [:a] 1]
+   [:http-response/ok {:message "No error"}]])
+
+(def handler (wrap-nexus no-throws-please nexus store {:ring-nexus/fail-fast? false
+                                                       :ring-nexus/on-error #(prn "Error: " %)}))
+
+(handler {}) ;;  => {:status 200 :body {:message "No error"} :headers {}}
+
+;; Your console will print the error
+#+end_src
 
 ** Recommendations
 

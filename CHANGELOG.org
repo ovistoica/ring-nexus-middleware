@@ -4,7 +4,15 @@
 * Unreleased
 
 ** Added
-- Example of using =ring-nexus-middleware= with reitit and a datomic db
+- Example of using =ring-nexus= with reitit and a datomic db
+- =ring-nexus= by default now fails fast if an action/effect fails
+- =:ring-nexus/fail-fast?= config option to dictate if fail-fast strategy is applied. Defaults to =true=
+- =:ring-nexus/on-error= callback config option. It will be called when an error occurs during dispatch. Defaults to throw
+- Test for the new functionality
+
+** Changed
+- *BREAKING* Renamed =ring-nexus-middleware.*= namespaces to =ring-nexus.*=
+- *BREAKING* Changed =:ring-nexus-middleware.core/state-k= config option to =:ring-nexus/state-k=
 
 * 2025.07.18
 

@@ -1,6 +1,6 @@
-(ns ring-nexus-middleware-examples.google-page
+(ns ring-nexus-examples.google-page
   (:require [hato.client :as http]
-            [ring-nexus-middleware.core :refer [wrap-nexus]]
+            [ring-nexus.core :refer [wrap-nexus]]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.params])
   (:import (clojure.lang ExceptionInfo)))

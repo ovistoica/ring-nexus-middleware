@@ -1,4 +1,4 @@
-(ns ring-nexus-middleware-examples.reitit-datomic
+(ns ring-nexus-examples.reitit-datomic
   (:require [datomic.api :as d]
             [hato.client :as http]
             [jsonista.core :as json]
@@ -10,7 +10,7 @@
             [reitit.ring.coercion :as coercion]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [reitit.ring.middleware.parameters :as parameters]
-            [ring-nexus-middleware.core :as ring-nexus]
+            [ring-nexus.core :as ring-nexus]
             [ring.adapter.jetty :as jetty])
   (:import (java.util UUID)))
 
