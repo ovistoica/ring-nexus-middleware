@@ -27,8 +27,10 @@
                   (fn [_ response-body] [[:http/respond
                                           {:status 200, :body response-body}]]))
         (assoc-in [:nexus/actions :http-response/created]
-                  (fn [_ response-body] [[:http/respond
-                                          {:status 201, :body response-body}]]))
+                  (fn [_ location response-body] [[:http/respond
+                                                   {:status 201
+                                                    :headers {"Location" location}
+                                                    :body response-body}]]))
         (assoc-in [:nexus/actions :http-response/bad-request]
                   (fn [_ response-body] [[:http/respond
                                           {:status 400, :body response-body}]]))
