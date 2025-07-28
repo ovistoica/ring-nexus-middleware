@@ -1,5 +1,21 @@
 #+title:  Change Log
 #+description:  All notable changes to this project will be documented in this file.
+#+startup: indent
+
+** Unreleased
+
+*** Added
+- Extra parameter location to =http/created= response action, so it adds location header.
+#+begin_src clojure
+[[:http-response/created {:message "Created"} "/get/created"]]
+;; => {:body {:message "Created"}, :headers {"Location" "/get/created"}, :status 201}
+#+end_src
+
+- =:ring-nexus/add-response-actions?= - config option to tell =ring-nexus= if the convenience response actions should be added or not. Defaults to =true=
+
+
+*** Changed
+- Reduced per request nexus map preparation to make per request handling faster
 
 ** 2025.07.19
 

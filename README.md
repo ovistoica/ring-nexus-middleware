@@ -255,6 +255,31 @@ The state key can also be changed:
 ```
 
 
+## Different response actions
+
+By default, `ring-nexus` will add convenience response actions like `:http-response/ok`, `:http-response/unauthorized` etc. If you want to overwrite these with your own actions, you can pass the `ring-nexus/add-response-actions?` key with false.
+
+```clojure
+(def store (atom {}))
+
+(def nexus
+  {:nexus/system->state deref,
+   :nexus/actions {:http-response/ok (fn [_ response-body]
+                                       [[:http/respond ;; this effect is added in `wrap-nexus`
+                                         {:status 200,
+                                          :headers {"X-Custom-Header" "My Custom value"}
+                                          :body response-body}]])}})
+
+(defn my-custom-ok
+  [_]
+  [[:http-response/ok {:message "Success"}]])
+
+(def handler (wrap-nexus no-throws-please nexus store {:ring-nexus/add-response-actions? false}))
+
+
+(handler {}) ;;  => {:status 200 :body {:message "Success"} :headers {"X-Custom-Header" "My Custom value"}}
+```
+
 ## Error handling
 
 By default, `ring-nexus` will throw any errors created in the handlers or during action/effect evaluation. The default error management strategy is [fail-fast strategy](https://github.com/cjohansen/nexus?tab=readme-ov-file#error-handling).

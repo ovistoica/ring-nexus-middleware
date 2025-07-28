@@ -1,6 +1,6 @@
 (ns ring-nexus.core-test
   (:require
-   [clojure.test :refer [deftest is testing use-fixtures]]
+   [clojure.test :refer [deftest is testing]]
    [ring-nexus.core :as core])
   (:import
    (clojure.lang ExceptionInfo)))
@@ -43,6 +43,8 @@
       (doseq [actions [[[:http-response/ok {:message "ok"}]]
                        [[:http-response/bad-request {:message "bad-request"}]]
                        [[:http-response/unauthorized {:message "unauthorized"}]]
+                       [[:http-response/created {:message "Created"} "/get/created"]]
+                       [[:http-response/created {:message "Created2"}]]
                        [[:http-response/not-found {:message "not-found"}]]
                        [[:http-response/internal-server-error
                          {:message "internal-server-error"}]]
@@ -53,6 +55,8 @@
            [{:body {:message "ok"}, :headers {}, :status 200}
             {:body {:message "bad-request"}, :headers {}, :status 400}
             {:body {:message "unauthorized"}, :headers {}, :status 401}
+            {:body {:message "Created"}, :headers {"Location" "/get/created"}, :status 201}
+            {:body {:message "Created2"}, :headers {}, :status 201}
             {:body {:message "not-found"}, :headers {}, :status 404}
             {:body {:message "internal-server-error"}, :headers {}, :status 500}
             {:body {:message "forbidden"}, :headers {}, :status 403}])))))
