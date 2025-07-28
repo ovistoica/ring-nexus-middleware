@@ -2,7 +2,7 @@
 #+description:  All notable changes to this project will be documented in this file.
 #+startup: indent
 
-** Unreleased
+** 2025.07.28
 
 *** Added
 - Extra parameter location to =http/created= response action, so it adds location header.
