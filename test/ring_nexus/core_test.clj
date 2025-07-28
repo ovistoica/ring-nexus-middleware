@@ -1,6 +1,6 @@
 (ns ring-nexus.core-test
   (:require
-   [clojure.test :refer [deftest is testing]]
+   [clojure.test :refer [deftest is testing use-fixtures]]
    [ring-nexus.core :as core])
   (:import
    (clojure.lang ExceptionInfo)))
@@ -12,7 +12,7 @@
   (-> test-action-handler
       (core/wrap-nexus nexus system)))
 
-                                        ; Global state for collecting responses
+; Global state for collecting responses
 (def responses (atom []))
 
 ;; Global respond function that appends to responses
@@ -51,15 +51,15 @@
                        [[:http-response/forbidden {:message "forbidden"}]]]]
         (handler {:body actions} respond identity))
       (is
-        (= @responses
-           [{:body {:message "ok"}, :headers {}, :status 200}
-            {:body {:message "bad-request"}, :headers {}, :status 400}
-            {:body {:message "unauthorized"}, :headers {}, :status 401}
-            {:body {:message "Created"}, :headers {"Location" "/get/created"}, :status 201}
-            {:body {:message "Created2"}, :headers {}, :status 201}
-            {:body {:message "not-found"}, :headers {}, :status 404}
-            {:body {:message "internal-server-error"}, :headers {}, :status 500}
-            {:body {:message "forbidden"}, :headers {}, :status 403}])))))
+       (= @responses
+          [{:body {:message "ok"}, :headers {}, :status 200}
+           {:body {:message "bad-request"}, :headers {}, :status 400}
+           {:body {:message "unauthorized"}, :headers {}, :status 401}
+           {:body {:message "Created"}, :headers {"Location" "/get/created"}, :status 201}
+           {:body {:message "Created2"}, :headers {}, :status 201}
+           {:body {:message "not-found"}, :headers {}, :status 404}
+           {:body {:message "internal-server-error"}, :headers {}, :status 500}
+           {:body {:message "forbidden"}, :headers {}, :status 403}])))))
 
 (deftest write-to-store
   (testing "handler that writes to state"
@@ -189,3 +189,21 @@
       (is (= (handler {}) {:body {:message "Saved to state"}, :headers {}, :status 200}))
       (is (= (ex-data @error) {:path [:a] :v 1}))
       (is (= (ex-message @error) "Error saving to state")))))
+
+(deftest ring-response-convenience-actions-disabled
+  (testing "Ring response convenience actions disabled"
+    (let [handler (-> test-action-handler
+                      (core/wrap-nexus {:nexus/system->state identity
+                                        :nexus/actions {:http-response/ok
+                                                        (fn [_ response-body]
+                                                          [[:http/respond ;; this effect is added in `wrap-nexus`
+                                                            {:status 200
+                                                             :headers {"X-Custom-Header" "My Custom value"}
+                                                             :body response-body}]])}}
+                                       nil
+                                       {:ring-nexus/add-response-actions? false}))]
+      (is (= (handler {:body [[:http-response/ok {:message "Action does not exist"}]]})
+             {:status 200, :headers {"X-Custom-Header" "My Custom value"}, :body {:message "Action does not exist"}}))
+
+      (is (thrown-with-msg? ExceptionInfo #"No such effect"
+                            (handler {:body [[:http-response/created {:message "Action does not exist"}]]}))))))
